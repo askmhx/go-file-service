@@ -1,1 +1,3 @@
-package go_file_service
+package gofs
+
+const Version = "v1.0.0"
