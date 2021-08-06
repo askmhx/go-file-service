@@ -1,34 +1,20 @@
-package
-
-import (
-	"context"
-	"fmt"
-)
 package gofs
-
 
 import (
 	"context"
 	"fmt"
 	"github.com/minio/minio-go/v7"
-	"rocket.iosxc.com/gateway/v1/model"
-	"rocket.iosxc.com/gateway/v1/repository"
-	"rocket.iosxc.com/gateway/v1/util"
 )
-
 
 type minioFileService struct {
 	ctx   context.Context
-	repo  repository.MerchantAttachRepository
+	repo  FileRepostory
 	minio *minio.Client
 }
 
-func (this minioFileService) Upload(data model.UploadRequest) model.CommonResult {
-
-	util.FilePut(this.ctx, this.minio, data.MerchantId, "", "FILE", data.File)
-
-	attach := model.MerchantAttach{
-		MerchantId: data.MerchantId,
+func (m minioFileService) Upload(data GofsFile) error {
+	MinioFilePut(this.ctx, this.minio, data.MerchantId, "", "FILE", data.File)
+	attach := GofsFile{
 		AttachName: data.FileName,
 		AttachType: "FILE",
 		AttachPath: data.FileName,
@@ -44,11 +30,11 @@ func (this minioFileService) Upload(data model.UploadRequest) model.CommonResult
 	return ret
 }
 
-func (this minioFileService) Download(data model.DownloadRequest) model.CommonResult {
+func (m minioFileService) Download(data *GofsFile) error {
 
 	fileName := fmt.Sprintf("CHANNEL-%s-%s.txt", data.FileType, data.FileDate)
 
-	if !util.FileExist(this.ctx, this.minio, data.MerchantId, fileName) {
+	if !MinioFileExist(this.ctx, this.minio, data.MerchantId, fileName) {
 		ret := model.CommonResult{
 			Code:    model.RESULT_CODE_FILE_NOT_FOUND,
 			Message: "upload success",
@@ -67,8 +53,10 @@ func (this minioFileService) Download(data model.DownloadRequest) model.CommonRe
 	return ret
 }
 
-func NewMinioFileService(repo repository.MerchantAttachRepository) FileService {
+func NewMinioFileService(repo FileRepostory, minio *minio.Client, ctx context.Context) FileService {
 	return &minioFileService{
-		repo: repo,
+		repo:  repo,
+		minio: minio,
+		ctx:   ctx,
 	}
 }

@@ -1,17 +1,8 @@
-package
-
-import (
-	"context"
-	"fmt"
-)
 package gofs
 
-
 import (
 	"context"
 	"fmt"
-	"rocket.iosxc.com/gateway/v1/model"
-	"rocket.iosxc.com/gateway/v1/repository"
 )
 
 type nfsFileService struct {
@@ -19,11 +10,11 @@ type nfsFileService struct {
 	basePath string
 }
 
-func (this nfsFileService) Upload(data model.UploadRequest) model.CommonResult {
+func (this nfsFileService) Upload(data GofsFile) error {
 
 	//util.FilePut(this.ctx, this.minio, data.MerchantId, "", "FILE", data.File)
 
-	attach := model.MerchantAttach{
+	attach := GofsFile{
 		MerchantId: data.MerchantId,
 		AttachName: data.FileName,
 		AttachType: "FILE",
