@@ -8,29 +8,19 @@ import (
 
 type minioFileService struct {
 	ctx   context.Context
-	repo  FileRepostory
+	repo  FilePersistenceCtrl
 	minio *minio.Client
 }
 
-func (m minioFileService) Upload(data GofsFile) error {
-	MinioFilePut(this.ctx, this.minio, data.MerchantId, "", "FILE", data.File)
-	attach := GofsFile{
-		AttachName: data.FileName,
-		AttachType: "FILE",
-		AttachPath: data.FileName,
-		CreatedBy:  "system",
+func (this minioFileService) Upload(data GofsFile) error {
+	MinioFilePut(this.ctx, this.minio, data.BucketName, data.Memo, data.FileType, data.FileAttach)
+	if this.repo != nil {
+		return this.repo.Save(data)
 	}
-	this.repo.Save(attach)
-
-	ret := model.CommonResult{
-		Code:    model.RESULT_CODE_SUCCESS,
-		Message: "upload success",
-		Data:    nil,
-	}
-	return ret
+	return nil
 }
 
-func (m minioFileService) Download(data *GofsFile) error {
+func (this minioFileService) Download(data *GofsFile) error {
 
 	fileName := fmt.Sprintf("CHANNEL-%s-%s.txt", data.FileType, data.FileDate)
 
@@ -53,7 +43,7 @@ func (m minioFileService) Download(data *GofsFile) error {
 	return ret
 }
 
-func NewMinioFileService(repo FileRepostory, minio *minio.Client, ctx context.Context) FileService {
+func NewMinioFileService(ctx context.Context, minio *minio.Client, repo FilePersistenceCtrl) FileService {
 	return &minioFileService{
 		repo:  repo,
 		minio: minio,

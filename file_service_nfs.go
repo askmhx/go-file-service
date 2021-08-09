@@ -7,6 +7,7 @@ import (
 
 type nfsFileService struct {
 	ctx      context.Context
+	repo     FilePersistenceCtrl
 	basePath string
 }
 
@@ -54,8 +55,9 @@ func (this nfsFileService) Download(data model.DownloadRequest) model.CommonResu
 	return ret
 }
 
-func NewNFSFileService(repo repository.MerchantAttachRepository) FileService {
+func NewNFSFileService(basePath string, repo FilePersistenceCtrl) FileService {
 	return &nfsFileService{
-		repo: repo,
+		repo:     repo,
+		basePath: basePath,
 	}
 }

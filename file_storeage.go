@@ -9,7 +9,7 @@ type GofsFile struct {
 	FileAttach os.File
 	FileName   string
 	FileType   string
-	Bucket     string
+	BucketName string
 	Memo       string
 	CreatedAt  time.Time
 	CreatedBy  string
@@ -17,7 +17,7 @@ type GofsFile struct {
 	UpdatedBy  string
 }
 
-type FileRepostory interface {
+type FilePersistenceCtrl interface {
 	Save(data GofsFile) error
 	Query(data *GofsFile) GofsFile
 }
